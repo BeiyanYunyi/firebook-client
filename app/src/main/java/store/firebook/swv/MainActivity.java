@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	// configuration variables
 	private static String ASWV_URL = SmartWebView.ASWV_URL;
-	private String CURR_URL = ASWV_URL;
 	private static String ASWV_SEARCH = SmartWebView.ASWV_SEARCH;
 	private static String ASWV_SHARE_URL = SmartWebView.ASWV_SHARE_URL;
 	private static String ASWV_EXC_LIST = SmartWebView.ASWV_EXC_LIST;
@@ -163,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	TextView asw_loading_text;
 	NotificationManager asw_notification;
 	Notification asw_notification_new;
+	WebAppInterface webAppInterface;
 	int asw_error_counter = 0;
 
 	Boolean true_online = !ASWP_OFFLINE && !ASWV_URL.startsWith("file:///");
@@ -292,9 +292,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		} else {
 			setContentView(R.layout.activity_main);
 		}
-
+		webAppInterface = new WebAppInterface(this);
 		asw_view = findViewById(R.id.msw_view);
 		print_view = (WebView) findViewById(R.id.print_view); //view on which you want to take a printout
+		asw_view.addJavascriptInterface(webAppInterface, "WebView");
 		//asw_view.addJavascriptInterface(new JSInterface(), "JSOUT");
 		//asw_view.addJavascriptInterface(new MainActivity.WebViewJavaScriptInterface(this), "androidapp"); //
 		// "androidapp is used to call methods exposed from javascript interface, in this example case print
@@ -714,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		//Overriding webview URLs
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			CURR_URL = url;
+			webAppInterface.setCurrUrl(url);
 			return url_actions(view, url);
 		}
 
@@ -722,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		@TargetApi(Build.VERSION_CODES.N)
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-			CURR_URL = request.getUrl().toString();
+			webAppInterface.setCurrUrl(request.getUrl().toString());
 			return url_actions(view, request.getUrl().toString());
 		}
 
@@ -792,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		} else if (url.startsWith("refresh:")) {
 			String ref_sch = (Uri.parse(url).toString()).replace("refresh:", "");
 			if (ref_sch.matches("URL")) {
-				CURR_URL = ASWV_URL;
+				webAppInterface.setCurrUrl(ASWV_URL);
 			}
 			pull_fresh();
 
@@ -874,7 +875,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	//Reloading current page
 	public void pull_fresh() {
-		aswm_view((!CURR_URL.equals("") ? CURR_URL : ASWV_URL), false, asw_error_counter);
+		String currUrl = webAppInterface.currUrl;
+		aswm_view((!currUrl.equals("") ? currUrl : ASWV_URL), false, asw_error_counter);
 	}
 
 	// changing port view
