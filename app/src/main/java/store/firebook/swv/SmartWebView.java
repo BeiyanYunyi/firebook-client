@@ -20,7 +20,7 @@ class SmartWebView {
 	static boolean ASWP_LOCATION      = false;         // track GPS locations
 	static boolean ASWP_CP            = true;        // enable copy/paste within webview
 
-	static boolean ASWP_RATINGS       = true;         // show ratings dialog; auto configured ; edit method get_rating() for customizations
+	static boolean ASWP_RATINGS       = false;         // show ratings dialog; auto configured ; edit method get_rating() for customizations
 
 	static boolean ASWP_PULLFRESH     = true;         // pull refresh current url
 	static boolean ASWP_PBAR          = true;         // show progress bar in app
